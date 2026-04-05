@@ -223,8 +223,8 @@ npm run test-db
 
 ## Deployment (Production)
 
-### Recommended Split
-- Server: Render (Docker)
+### Recommended Deployment
+- Backend + ML: one Render web service (`deploy/Dockerfile.render`)
 - Client: Vercel
 - Database: MongoDB Atlas
 
@@ -237,7 +237,6 @@ MONGODB_URI=<mongodb-uri>
 JWT_SECRET=<secure-secret>
 CLIENT_URL=https://your-app.vercel.app
 CORS_ORIGIN=https://your-app.vercel.app
-ML_SERVICE_URL=https://<ml-service-host-or-internal-url>
 ```
 
 ### Client environment variable
@@ -250,6 +249,9 @@ VITE_API_URL=https://your-server.onrender.com
 - On Vercel, set project root directory to `client`
 - Keep Vite rewrite support for SPA routes (`client/vercel.json`)
 - Ensure server CORS values exactly match deployed frontend origin(s)
+- Render deploy uses one web service with `deploy/Dockerfile.render` (Node + ML in one container)
+- `render.yaml` must stay at repository root (Render blueprint discovery)
+- `.dockerignore` should stay at repository root (controls root Docker context for Render build)
 
 ## Docker (Local Alternative)
 
