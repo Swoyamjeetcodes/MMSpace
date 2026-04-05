@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 
 // Route to get placement prediction from Python Microservice
 // POST /api/placement/predict
@@ -20,19 +19,31 @@ router.post('/predict', async (req, res) => {
         // Use environment variable if available, otherwise default to localhost:8000
         const pythonServiceUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000';
 
-        const response = await axios.post(`${pythonServiceUrl}/predict`, studentMetrics);
+        const response = await fetch(`${pythonServiceUrl}/predict`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(studentMetrics),
+        });
+
+        let responseData;
+        try {
+            responseData = await response.json();
+        } catch (parseError) {
+            responseData = { message: 'Invalid response from ML service' };
+        }
+
+        if (!response.ok) {
+            return res.status(response.status).json(responseData);
+        }
 
         // Return prediction to the frontend
-        res.status(200).json(response.data);
+        res.status(200).json(responseData);
 
     } catch (error) {
         console.error('Error getting placement prediction:', error.message);
-        // Handle axios errors
-        if (error.response) {
-            res.status(error.response.status).json(error.response.data);
-        } else {
-            res.status(500).json({ message: 'Internal Server Error while connecting to ML service' });
-        }
+        res.status(500).json({ message: 'Internal Server Error while connecting to ML service' });
     }
 });
 
