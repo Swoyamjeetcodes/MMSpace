@@ -2,6 +2,24 @@
 
 MMSpace is a mentor-mentee management platform for institutes and training programs. It combines role-based workflows (admin, mentor, mentee, guardian), real-time communication, attendance and leave tracking, grievance handling, and an AI-powered placement predictor.
 
+## Navigation
+
+- [What This Repository Contains](#what-this-repository-contains)
+- [Core Features](#core-features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Repository Structure](#repository-structure)
+- [Prerequisites](#prerequisites)
+- [Local Setup](#local-setup)
+- [Seeding Demo Data](#seeding-demo-data)
+- [Important Functional Flows](#important-functional-flows)
+- [Health and Debugging](#health-and-debugging)
+- [Deployment (Production)](#deployment-production)
+- [Docker (Local Alternative)](#docker-local-alternative)
+- [Known Issues and Backlog](#known-issues-and-backlog)
+- [Testing Checklist](#testing-checklist)
+- [Contributing](#contributing)
+
 ## What This Repository Contains
 
 - React + Vite frontend (`client`)
@@ -235,8 +253,59 @@ VITE_API_URL=https://your-server.onrender.com
 
 ## Docker (Local Alternative)
 
-A Docker-based setup guide existed in this repo and is now consolidated here.
-If you run local containers, ensure service URLs and env values align with your compose networking.
+A new user can run MMSpace with Docker on Linux, macOS, and Windows (Docker Desktop + WSL2 recommended on Windows).
+
+### Docker Quick Start
+
+```bash
+git clone <repository-url>
+cd MMSpace/mmspace-docker
+docker compose down --remove-orphans
+docker compose up -d --build
+docker compose ps
+```
+
+Open in browser:
+- `http://localhost:3000`
+
+Useful checks:
+
+```bash
+docker compose logs -f server
+docker compose logs -f ml-service
+curl http://localhost:5001/api/health
+```
+
+Stop containers:
+
+```bash
+docker compose down
+```
+
+Full reset (also triggers first-time seed again):
+
+```bash
+docker compose down -v
+docker compose up -d --build
+```
+
+### Auto Seeding on First Init
+
+Docker server startup runs `seed:if-empty`, which executes `scripts/seed.js` only when the database has no users.
+
+### Will File Changes Reflect Immediately?
+
+Not in this Docker setup by default.
+
+- This stack runs production-style containers, so code edits on host do not hot-reload automatically.
+- After code changes, rebuild and restart:
+
+```bash
+cd mmspace-docker
+docker compose up -d --build
+```
+
+For instant hot reload while developing, use the non-Docker local dev flow (`npm run dev` for web app + `python app.py` for ML service).
 
 ## Known Issues and Backlog
 
