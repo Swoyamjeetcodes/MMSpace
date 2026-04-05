@@ -265,3 +265,4 @@ webpack-bundle-analyzer-report.html
 
 ml_service/venv/
 ml_service/__pycache__/
+.codex
